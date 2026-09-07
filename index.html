@@ -1,0 +1,984 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Peruse&amp;Prep — your cozy study corner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #F1E4D3;
+    --bg-soft: #F8EFE2;
+    --surface: #FFFDF9;
+    --surface-2: #FBF3E7;
+    --ink: #3B2A20;
+    --ink-soft: #7A6A5C;
+    --accent: #6F4E37;
+    --accent-dark: #4A3222;
+    --accent-2: #C98A54;
+    --line: rgba(74,50,34,0.16);
+    --shadow: 0 10px 30px rgba(74,50,34,0.12);
+    --radius: 22px;
+    --steam: rgba(74,50,34,0.35);
+  }
+  body[data-theme="beans"]{
+    --bg: #2A1D14;
+    --bg-soft: #34241A;
+    --surface: #3E2C20;
+    --surface-2: #46311F;
+    --ink: #F3E6D6;
+    --ink-soft: #C9AF97;
+    --accent: #D9A466;
+    --accent-dark: #F1CE99;
+    --accent-2: #E0AA6A;
+    --line: rgba(241,206,153,0.18);
+    --shadow: 0 10px 30px rgba(0,0,0,0.35);
+    --steam: rgba(241,230,214,0.35);
+  }
+  body[data-theme="study"]{
+    --bg: #FAF6EF;
+    --bg-soft: #FFFFFF;
+    --surface: #FFFFFF;
+    --surface-2: #F3EFE6;
+    --ink: #2E2A22;
+    --ink-soft: #7D8570;
+    --accent: #6E7A54;
+    --accent-dark: #4C5539;
+    --accent-2: #A6764F;
+    --line: rgba(46,42,34,0.12);
+    --shadow: 0 10px 26px rgba(46,42,34,0.10);
+    --steam: rgba(46,42,34,0.25);
+  }
+  body[data-theme="chill"]{
+    --bg: #ECE1E6;
+    --bg-soft: #F4ECEF;
+    --surface: #FFFBFC;
+    --surface-2: #F6E9EC;
+    --ink: #3E2E37;
+    --ink-soft: #8C6E7B;
+    --accent: #93677A;
+    --accent-dark: #5E3E4C;
+    --accent-2: #C99A8E;
+    --line: rgba(94,62,76,0.14);
+    --shadow: 0 10px 28px rgba(94,62,76,0.14);
+    --steam: rgba(94,62,76,0.3);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Quicksand', sans-serif;
+    transition: background .5s ease, color .5s ease;
+    min-height:100vh;
+  }
+  h1,h2,h3,.bubble{
+    font-family:'Baloo 2', cursive;
+    letter-spacing:.2px;
+  }
+  ::selection{ background: #F4C95D; color:#3B2A20; }
+
+  /* ---------- layout shell ---------- */
+  .app{
+    max-width:1320px;
+    margin:0 auto;
+    padding: 22px 26px 60px;
+  }
+
+  /* ---------- top bar ---------- */
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    flex-wrap:wrap;
+    padding-bottom:18px;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .brand svg{ width:54px; height:54px; flex:none; }
+  .brand-name{
+    font-size:28px;
+    font-weight:700;
+    color:var(--accent-dark);
+    line-height:1;
+  }
+  .brand-tag{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-top:3px;
+    font-weight:600;
+  }
+
+  .theme-switch{
+    display:flex;
+    gap:8px;
+    background:var(--surface);
+    padding:6px;
+    border-radius:999px;
+    box-shadow: var(--shadow);
+    border:1px solid var(--line);
+  }
+  .theme-pill{
+    border:none;
+    cursor:pointer;
+    padding:9px 16px;
+    border-radius:999px;
+    font-family:'Baloo 2',cursive;
+    font-size:13.5px;
+    font-weight:600;
+    color: var(--ink-soft);
+    background:transparent;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    transition:.2s ease;
+  }
+  .theme-pill .dot{ width:10px;height:10px;border-radius:50%; }
+  .theme-pill.active{
+    background: var(--accent);
+    color: var(--surface);
+  }
+  .theme-pill.active .dot{ background: var(--surface); }
+  .theme-pill:not(.active):hover{ background: var(--bg-soft); }
+
+  /* ---------- greeting strip ---------- */
+  .greeting{
+    background: linear-gradient(120deg, var(--accent) 0%, var(--accent-2) 100%);
+    color: var(--surface);
+    border-radius: var(--radius);
+    padding: 22px 28px;
+    margin-bottom:22px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+    box-shadow: var(--shadow);
+  }
+  .greeting h1{ margin:0 0 4px; font-size:26px; }
+  .greeting p{ margin:0; opacity:.92; font-weight:600; font-size:14.5px; max-width:520px; }
+  .greeting .cup{ font-size:40px; filter:drop-shadow(0 4px 6px rgba(0,0,0,.15)); }
+
+  /* ---------- main grid ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns: 270px 1fr;
+    gap: 22px;
+    align-items:start;
+  }
+  @media (max-width: 880px){
+    .grid{ grid-template-columns: 1fr; }
+  }
+
+  /* ---------- sidebar / folders ---------- */
+  .panel{
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border:1px solid var(--line);
+    padding:18px;
+  }
+  .panel h2{
+    font-size:17px;
+    margin: 2px 0 14px;
+    color: var(--accent-dark);
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .folder-list{ display:flex; flex-direction:column; gap:8px; }
+  .folder-item{
+    border-radius:14px;
+    overflow:hidden;
+    border:2px solid transparent;
+    transition:.2s ease;
+  }
+  .folder-item.active{ border-color: var(--accent); }
+  .folder-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 12px;
+    cursor:pointer;
+    background: var(--folder-color, var(--surface-2));
+    color: var(--folder-text, var(--ink));
+  }
+  .folder-row .tab{
+    width:8px;height:26px;border-radius:6px;
+    background: var(--folder-accent, var(--accent));
+    flex:none;
+  }
+  .folder-row .fname{
+    font-weight:700;
+    font-family:'Baloo 2',cursive;
+    font-size:14.5px;
+    flex:1;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .folder-row .chev{ font-size:12px; opacity:.6; transition: transform .2s ease; }
+  .folder-item.open .chev{ transform: rotate(90deg); }
+
+  .folder-drawer{
+    max-height:0;
+    overflow:hidden;
+    background: var(--surface-2);
+    transition: max-height .25s ease, padding .25s ease;
+  }
+  .folder-item.open .folder-drawer{
+    max-height: 160px;
+    padding: 12px;
+  }
+  .drawer-label{ font-size:11.5px; font-weight:700; color:var(--ink-soft); margin-bottom:8px; text-transform:uppercase; letter-spacing:.06em;}
+  .swatches{ display:flex; gap:8px; margin-bottom:12px; }
+  .swatch{
+    width:26px;height:26px;border-radius:50%;
+    cursor:pointer;
+    border:2px solid var(--line);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.12) inset;
+    position:relative;
+  }
+  .swatch.selected::after{
+    content:"✓";
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px; color:#fff; text-shadow:0 0 2px rgba(0,0,0,.6);
+  }
+  .drawer-actions{ display:flex; gap:8px; }
+  .btn-remove{
+    border:none; background:none;
+    color:#A8493A;
+    font-weight:700;
+    font-size:12.5px;
+    cursor:pointer;
+    padding:6px 0;
+  }
+  .btn-remove:hover{ text-decoration: underline; }
+
+  .add-folder-btn{
+    margin-top:6px;
+    width:100%;
+    border:2px dashed var(--line);
+    background:transparent;
+    color: var(--accent);
+    font-family:'Baloo 2',cursive;
+    font-weight:700;
+    font-size:14px;
+    border-radius:14px;
+    padding:10px;
+    cursor:pointer;
+    transition:.2s ease;
+  }
+  .add-folder-btn:hover{ background: var(--bg-soft); border-color: var(--accent); }
+
+  .side-note{
+    margin-top:16px;
+    font-size:12.5px;
+    color: var(--ink-soft);
+    line-height:1.5;
+    padding-top:14px;
+    border-top:1px dashed var(--line);
+  }
+
+  /* ---------- tabs ---------- */
+  .tabbar{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:16px;
+  }
+  .tabbtn{
+    border:1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink-soft);
+    font-family:'Baloo 2',cursive;
+    font-weight:600;
+    font-size:14px;
+    padding:10px 18px;
+    border-radius:999px;
+    cursor:pointer;
+    display:flex; align-items:center; gap:7px;
+    transition:.2s ease;
+    box-shadow: var(--shadow);
+  }
+  .tabbtn.active{ background: var(--accent-dark); color: var(--surface); border-color: var(--accent-dark); }
+
+  .content-panel{
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border:1px solid var(--line);
+    padding:24px;
+    min-height:420px;
+  }
+  .content-head{
+    display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+    margin-bottom:16px;
+  }
+  .content-head h2{ margin:0; font-size:20px; color:var(--accent-dark); }
+  .content-head .sub{ font-size:13px; color:var(--ink-soft); font-weight:600; margin-top:3px;}
+
+  /* ---------- notes / highlighter ---------- */
+  .tool-row{ display:flex; gap:8px; align-items:center; margin-bottom:12px; flex-wrap:wrap; }
+  .hl-btn{
+    width:30px; height:30px; border-radius:9px; cursor:pointer; border:2px solid rgba(0,0,0,0.08);
+  }
+  .tool-sep{ width:1px; height:22px; background:var(--line); margin:0 4px; }
+  .tool-label{ font-size:12px; font-weight:700; color:var(--ink-soft); margin-right:4px; }
+  .icon-btn{
+    border:1px solid var(--line); background:var(--surface-2); color:var(--ink);
+    font-family:'Quicksand',sans-serif; font-weight:700; font-size:12.5px;
+    padding:7px 12px; border-radius:10px; cursor:pointer; display:flex; gap:6px; align-items:center;
+  }
+  .icon-btn:hover{ background: var(--bg-soft); }
+  .notes-area{
+    min-height:260px;
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:18px 20px;
+    background: var(--bg-soft);
+    line-height:1.7;
+    font-size:15px;
+    outline:none;
+  }
+  .notes-area:focus{ box-shadow: 0 0 0 3px rgba(111,78,55,0.18); }
+  mark{ padding:1px 2px; border-radius:3px; }
+
+  /* ---------- focus session ---------- */
+  .focus-wrap{
+    display:flex;
+    gap:28px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+  .timer-ring{
+    width:220px; height:220px;
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center; flex-direction:column;
+    background: conic-gradient(var(--accent) calc(var(--pct,0)*1%), var(--surface-2) 0);
+    box-shadow: var(--shadow);
+    position:relative;
+    flex:none;
+  }
+  .timer-ring::before{
+    content:"";
+    position:absolute; inset:12px;
+    border-radius:50%;
+    background: var(--surface);
+  }
+  .timer-inner{ position:relative; text-align:center; }
+  .timer-time{ font-family:'Baloo 2',cursive; font-size:38px; color:var(--accent-dark); font-weight:700; }
+  .timer-phase{ font-size:12.5px; color:var(--ink-soft); font-weight:700; text-transform:uppercase; letter-spacing:.07em; margin-top:2px;}
+  .focus-controls{ display:flex; flex-direction:column; gap:14px; min-width:230px; }
+  .focus-btns{ display:flex; gap:10px; }
+  .btn-main{
+    border:none; cursor:pointer; font-family:'Baloo 2',cursive; font-weight:700; font-size:14.5px;
+    padding:11px 20px; border-radius:12px; background: var(--accent); color:var(--surface);
+    transition:.2s ease;
+  }
+  .btn-main:hover{ background: var(--accent-dark); }
+  .btn-ghost{
+    border:1px solid var(--line); cursor:pointer; font-family:'Baloo 2',cursive; font-weight:700; font-size:14.5px;
+    padding:11px 20px; border-radius:12px; background: transparent; color:var(--ink);
+  }
+  .btn-ghost:hover{ background: var(--bg-soft); }
+  .length-row{ display:flex; gap:10px; align-items:center; font-size:13px; font-weight:700; color:var(--ink-soft); }
+  .length-row input{
+    width:56px; padding:6px 8px; border-radius:8px; border:1px solid var(--line); font-family:'Quicksand';
+    background:var(--surface); color:var(--ink);
+  }
+  .focus-stat{ font-size:13px; color: var(--ink-soft); font-weight:600; }
+  .focus-msg{ font-size:13.5px; color:var(--accent-dark); font-weight:700; min-height:18px; }
+
+  /* ---------- flashcards ---------- */
+  .card-form{
+    display:flex; gap:10px; flex-wrap:wrap; margin-bottom:18px;
+  }
+  .card-form input{
+    flex:1; min-width:180px; padding:11px 14px; border-radius:12px; border:1px solid var(--line);
+    background: var(--surface-2); font-family:'Quicksand'; color:var(--ink); font-size:14px;
+  }
+  .card-form input:focus{ outline:none; box-shadow:0 0 0 3px rgba(111,78,55,0.18); }
+  .cards-grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:16px;
+  }
+  .flashcard{
+    perspective:1000px; height:130px; cursor:pointer; position:relative;
+  }
+  .flashcard .inner{
+    position:relative; width:100%; height:100%; transition: transform .5s;
+    transform-style: preserve-3d;
+  }
+  .flashcard.flipped .inner{ transform: rotateY(180deg); }
+  .face{
+    position:absolute; inset:0; backface-visibility:hidden;
+    border-radius:16px; padding:14px; display:flex; align-items:center; justify-content:center; text-align:center;
+    font-weight:700; font-family:'Baloo 2',cursive; font-size:14.5px; box-shadow: var(--shadow);
+  }
+  .face.front{ background: var(--accent); color: var(--surface); }
+  .face.back{ background: var(--surface-2); color: var(--ink); transform: rotateY(180deg); border:1px solid var(--line); }
+  .flash-del{
+    position:absolute; top:-8px; right:-8px; width:24px; height:24px; border-radius:50%;
+    background:#A8493A; color:#fff; border:none; cursor:pointer; font-size:12px; z-index:2;
+    display:flex;align-items:center;justify-content:center; box-shadow:0 2px 5px rgba(0,0,0,.2);
+  }
+  .empty{
+    text-align:center; padding:40px 20px; color: var(--ink-soft);
+  }
+  .empty .big{ font-size:38px; margin-bottom:8px; }
+
+  /* ---------- pdf library ---------- */
+  .pdf-add{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
+  .pdf-add .file-btn{
+    border:1px solid var(--line); background:var(--surface-2); padding:11px 16px; border-radius:12px;
+    font-family:'Baloo 2',cursive; font-weight:700; font-size:13.5px; cursor:pointer; color:var(--ink);
+  }
+  .pdf-add input[type=text]{
+    flex:1; min-width:200px; padding:11px 14px; border-radius:12px; border:1px solid var(--line);
+    background: var(--surface-2); font-family:'Quicksand'; color:var(--ink);
+  }
+  .pdf-list{ display:flex; flex-direction:column; gap:10px; margin-bottom:16px; }
+  .pdf-row{
+    display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:12px;
+    background: var(--surface-2); border:1px solid var(--line);
+  }
+  .pdf-row .pname{ flex:1; font-weight:700; font-size:13.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .pdf-row a, .pdf-row button{
+    font-size:12px; font-weight:700; text-decoration:none; color: var(--accent-dark);
+    background:none; border:none; cursor:pointer; padding:4px 8px;
+  }
+  .pdf-frame-wrap{
+    border:1px solid var(--line); border-radius:16px; overflow:hidden; background:var(--bg-soft); height:460px;
+  }
+  .pdf-frame-wrap iframe{ width:100%; height:100%; border:none; }
+  .pdf-hint{ font-size:12px; color: var(--ink-soft); margin-top:8px; }
+
+  footer{
+    text-align:center; margin-top:30px; font-size:12.5px; color: var(--ink-soft); font-weight:600;
+  }
+  footer span{ color: var(--accent); }
+</style>
+</head>
+<body data-theme="coffee">
+<div class="app">
+
+  <!-- ============ TOP BAR ============ -->
+  <div class="topbar">
+    <div class="brand">
+      <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M40 20 C 43 12, 50 12, 48 22" stroke="var(--steam)" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <path d="M55 18 C 58 10, 65 10, 63 20" stroke="var(--steam)" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <ellipse cx="60" cy="46" rx="24" ry="5.5" fill="var(--accent)"/>
+        <path d="M38 46 L 42 60 C 43 65 48 68 60 68 C 72 68 77 65 78 60 L 82 46 Z" fill="var(--accent)"/>
+        <path d="M80 49 C 92 47, 94 60, 82 61" fill="none" stroke="var(--accent)" stroke-width="5" stroke-linecap="round"/>
+        <rect x="24" y="72" width="72" height="15" rx="3" fill="var(--accent-dark)"/>
+        <rect x="27" y="87" width="66" height="15" rx="3" fill="var(--accent)" transform="rotate(-1 60 94)"/>
+        <rect x="24" y="102" width="72" height="15" rx="3" fill="var(--accent-dark)"/>
+        <rect x="30" y="74" width="3" height="11" fill="var(--surface)" opacity="0.6"/>
+        <rect x="30" y="104" width="3" height="11" fill="var(--surface)" opacity="0.6"/>
+      </svg>
+      <div>
+        <div class="brand-name bubble">Peruse&amp;Prep</div>
+        <div class="brand-tag">a cozy corner for slow, steady studying</div>
+      </div>
+    </div>
+
+    <div class="theme-switch" id="themeSwitch">
+      <button class="theme-pill active" data-theme="coffee"><span class="dot" style="background:#6F4E37"></span>Coffee</button>
+      <button class="theme-pill" data-theme="beans"><span class="dot" style="background:#3E2C20"></span>Beans</button>
+      <button class="theme-pill" data-theme="study"><span class="dot" style="background:#6E7A54"></span>Study</button>
+      <button class="theme-pill" data-theme="chill"><span class="dot" style="background:#93677A"></span>Chill</button>
+    </div>
+  </div>
+
+  <!-- ============ GREETING ============ -->
+  <div class="greeting">
+    <div>
+      <h1 id="greetHeading">Good to see you back ☕</h1>
+      <p id="greetSub">Pour something warm, pick a folder, and let's chip away at today's list — one gentle page at a time.</p>
+    </div>
+    <div class="cup">📚</div>
+  </div>
+
+  <div class="grid">
+    <!-- ============ SIDEBAR: FOLDERS ============ -->
+    <div class="panel">
+      <h2>🗂️ Your folders</h2>
+      <div class="folder-list" id="folderList"></div>
+      <button class="add-folder-btn" id="addFolderBtn">+ New folder</button>
+      <div class="side-note">Tap a folder to open it, or tap again to choose a colour or tuck it away for good. Colours are kept simple on purpose: coffee brown, white, black, or beige.</div>
+    </div>
+
+    <!-- ============ MAIN CONTENT ============ -->
+    <div>
+      <div class="tabbar" id="tabbar">
+        <button class="tabbtn active" data-tab="notes">📝 Notes &amp; Highlights</button>
+        <button class="tabbtn" data-tab="focus">⏳ Focus Session</button>
+        <button class="tabbtn" data-tab="flash">🃏 Flashcards</button>
+        <button class="tabbtn" data-tab="pdf">📄 PDF Library</button>
+      </div>
+
+      <div class="content-panel" id="contentPanel"></div>
+    </div>
+  </div>
+
+  <footer>Made slowly, one cup at a time — <span>Peruse&amp;Prep</span> · Sunbeam Event Edition</footer>
+</div>
+
+<script>
+/* =========================================================
+   STATE
+========================================================= */
+const FOLDER_COLORS = {
+  "coffee": { bg:"#6F4E37", text:"#FFFDF9", accent:"#4A3222" },
+  "white":  { bg:"#FFFDF9", text:"#3B2A20", accent:"#C98A54" },
+  "black":  { bg:"#231A14", text:"#F1E4D3", accent:"#C98A54" },
+  "beige":  { bg:"#E7D7BC", text:"#3B2A20", accent:"#8A6647" }
+};
+
+let state = {
+  activeTab: "notes",
+  activeFolderId: "home",
+  openFolderId: null,
+  folders: [
+    { id:"home",   name:"Home base",        color:"coffee", notes:"<p>Welcome to your first folder! Click the highlighter colours above, select any text, and paint it. This is your space — make it messy, make it yours. ☕</p>", flashcards:[], pdfs:[] },
+    { id:"chem",   name:"Chemistry",        color:"beige",  notes:"<p>Reaction rates, half-lives, and the occasional small explosion of understanding.</p>", flashcards:[{id:1, front:"What is an exothermic reaction?", back:"A reaction that releases energy, usually as heat."}], pdfs:[] },
+    { id:"lit",    name:"Literature",       color:"white",  notes:"<p>Quotes worth remembering, themes worth arguing about.</p>", flashcards:[], pdfs:[] },
+  ],
+  focus: {
+    workMin: 25, breakMin: 5,
+    remaining: 25*60, phase: "Focus",
+    running:false, timerId:null, sessionsDone:0
+  }
+};
+
+/* =========================================================
+   THEME SWITCH
+========================================================= */
+document.getElementById("themeSwitch").addEventListener("click", (e)=>{
+  const btn = e.target.closest(".theme-pill");
+  if(!btn) return;
+  document.body.setAttribute("data-theme", btn.dataset.theme);
+  document.querySelectorAll(".theme-pill").forEach(p=>p.classList.remove("active"));
+  btn.classList.add("active");
+  const greetings = {
+    coffee: ["Good to see you back ☕","Pour something warm, pick a folder, and let's chip away at today's list — one gentle page at a time."],
+    beans: ["Deep roast, deep focus 🌑","Lights low, mind clear. Let's get through a few good pages tonight."],
+    study: ["Fresh page, fresh start 📖","Crisp air, clear desk — everything you need is one click to the left."],
+    chill: ["No rush today 🌸","Soft mode is on. Take it slow, and let the highlights do the remembering for you."]
+  };
+  const g = greetings[btn.dataset.theme] || greetings.coffee;
+  document.getElementById("greetHeading").textContent = g[0];
+  document.getElementById("greetSub").textContent = g[1];
+});
+
+/* =========================================================
+   FOLDERS
+========================================================= */
+function currentFolder(){
+  return state.folders.find(f=>f.id===state.activeFolderId) || state.folders[0];
+}
+
+function renderFolders(){
+  const list = document.getElementById("folderList");
+  list.innerHTML = "";
+  state.folders.forEach(folder=>{
+    const c = FOLDER_COLORS[folder.color];
+    const item = document.createElement("div");
+    item.className = "folder-item" + (folder.id===state.activeFolderId ? " active":"") + (folder.id===state.openFolderId ? " open":"");
+    item.innerHTML = `
+      <div class="folder-row" style="--folder-color:${c.bg}; --folder-text:${c.text}; --folder-accent:${c.accent}">
+        <div class="tab"></div>
+        <div class="fname">${escapeHtml(folder.name)}</div>
+        <div class="chev">▸</div>
+      </div>
+      <div class="folder-drawer">
+        <div class="drawer-label">Recolour this folder</div>
+        <div class="swatches">
+          ${Object.keys(FOLDER_COLORS).map(key=>`
+            <div class="swatch ${folder.color===key?'selected':''}" data-color="${key}" data-folder="${folder.id}"
+                 style="background:${FOLDER_COLORS[key].bg}; ${key==='white' ? 'border-color:#ccc' : ''}"></div>
+          `).join("")}
+        </div>
+        <div class="drawer-actions">
+          <button class="btn-remove" data-remove="${folder.id}">🗑 Remove folder</button>
+        </div>
+      </div>
+    `;
+    // click row: select folder as active, toggle drawer
+    item.querySelector(".folder-row").addEventListener("click", ()=>{
+      if(state.activeFolderId !== folder.id){
+        state.activeFolderId = folder.id;
+        state.openFolderId = folder.id;
+      } else {
+        state.openFolderId = (state.openFolderId === folder.id) ? null : folder.id;
+      }
+      renderAll();
+    });
+    // swatches
+    item.querySelectorAll(".swatch").forEach(sw=>{
+      sw.addEventListener("click",(ev)=>{
+        ev.stopPropagation();
+        folder.color = sw.dataset.color;
+        renderAll();
+      });
+    });
+    // remove
+    item.querySelector("[data-remove]").addEventListener("click",(ev)=>{
+      ev.stopPropagation();
+      if(state.folders.length===1){
+        alert("Keep at least one folder around — even a cozy desk needs one drawer.");
+        return;
+      }
+      const ok = confirm(`Remove "${folder.name}"? Whatever's inside goes with it.`);
+      if(!ok) return;
+      state.folders = state.folders.filter(f=>f.id!==folder.id);
+      if(state.activeFolderId===folder.id) state.activeFolderId = state.folders[0].id;
+      if(state.openFolderId===folder.id) state.openFolderId = null;
+      renderAll();
+    });
+    list.appendChild(item);
+  });
+}
+
+document.getElementById("addFolderBtn").addEventListener("click", ()=>{
+  const name = prompt("Name this folder (e.g. Biology, Finals Week, Sunday Review):");
+  if(!name) return;
+  const id = "f" + Date.now();
+  state.folders.push({ id, name: name.trim().slice(0,40), color:"beige", notes:"<p>New folder, blank page. Start whenever you're ready.</p>", flashcards:[], pdfs:[] });
+  state.activeFolderId = id;
+  state.openFolderId = null;
+  renderAll();
+});
+
+/* =========================================================
+   TABS
+========================================================= */
+document.getElementById("tabbar").addEventListener("click",(e)=>{
+  const btn = e.target.closest(".tabbtn");
+  if(!btn) return;
+  state.activeTab = btn.dataset.tab;
+  renderAll();
+});
+
+/* =========================================================
+   CONTENT RENDER
+========================================================= */
+function renderContent(){
+  document.querySelectorAll(".tabbtn").forEach(b=>b.classList.toggle("active", b.dataset.tab===state.activeTab));
+  const panel = document.getElementById("contentPanel");
+  const folder = currentFolder();
+
+  if(state.activeTab === "notes"){
+    panel.innerHTML = `
+      <div class="content-head">
+        <div>
+          <h2>📝 Notes — ${escapeHtml(folder.name)}</h2>
+          <div class="sub">Select any text, then tap a colour to highlight it.</div>
+        </div>
+      </div>
+      <div class="tool-row">
+        <span class="tool-label">Highlighter</span>
+        <div class="hl-btn" style="background:#F4C95D" data-hl="#F4C95D" title="Yellow"></div>
+        <div class="hl-btn" style="background:#B7E3A8" data-hl="#B7E3A8" title="Green"></div>
+        <div class="hl-btn" style="background:#F2A6A6" data-hl="#F2A6A6" title="Pink"></div>
+        <div class="hl-btn" style="background:#A9C9E8" data-hl="#A9C9E8" title="Blue"></div>
+        <div class="tool-sep"></div>
+        <button class="icon-btn" id="eraseHl">✕ Remove highlight</button>
+        <button class="icon-btn" id="boldBtn"><b>B</b></button>
+        <button class="icon-btn" id="italicBtn"><i>I</i></button>
+      </div>
+      <div class="notes-area" id="notesArea" contenteditable="true">${folder.notes}</div>
+    `;
+    const area = panel.querySelector("#notesArea");
+    area.addEventListener("input", ()=>{ folder.notes = area.innerHTML; });
+    panel.querySelectorAll("[data-hl]").forEach(b=>{
+      b.addEventListener("mousedown", (e)=>e.preventDefault());
+      b.addEventListener("click", ()=>{
+        area.focus();
+        document.execCommand("hiliteColor", false, b.dataset.hl);
+        folder.notes = area.innerHTML;
+      });
+    });
+    panel.querySelector("#eraseHl").addEventListener("mousedown", e=>e.preventDefault());
+    panel.querySelector("#eraseHl").addEventListener("click", ()=>{
+      area.focus();
+      document.execCommand("hiliteColor", false, "transparent");
+      folder.notes = area.innerHTML;
+    });
+    panel.querySelector("#boldBtn").addEventListener("mousedown", e=>e.preventDefault());
+    panel.querySelector("#boldBtn").addEventListener("click", ()=>{ area.focus(); document.execCommand("bold"); folder.notes=area.innerHTML; });
+    panel.querySelector("#italicBtn").addEventListener("mousedown", e=>e.preventDefault());
+    panel.querySelector("#italicBtn").addEventListener("click", ()=>{ area.focus(); document.execCommand("italic"); folder.notes=area.innerHTML; });
+  }
+
+  if(state.activeTab === "focus"){
+    const f = state.focus;
+    const total = f.phase==="Focus" ? f.workMin*60 : f.breakMin*60;
+    const pct = Math.round(((total - f.remaining)/total)*100);
+    panel.innerHTML = `
+      <div class="content-head">
+        <div>
+          <h2>⏳ Focus Session</h2>
+          <div class="sub">Sit with one folder, one task, and let the timer hold the rest.</div>
+        </div>
+      </div>
+      <div class="focus-wrap">
+        <div class="timer-ring" style="--pct:${pct}">
+          <div class="timer-inner">
+            <div class="timer-time" id="timeDisplay">${formatTime(f.remaining)}</div>
+            <div class="timer-phase" id="phaseDisplay">${f.phase}</div>
+          </div>
+        </div>
+        <div class="focus-controls">
+          <div class="focus-btns">
+            <button class="btn-main" id="startPauseBtn">${f.running ? "Pause":"Start"}</button>
+            <button class="btn-ghost" id="resetBtn">Reset</button>
+          </div>
+          <div class="length-row">
+            Focus <input type="number" id="workInput" min="1" max="120" value="${f.workMin}"> min
+            &nbsp;·&nbsp; Break <input type="number" id="breakInput" min="1" max="60" value="${f.breakMin}"> min
+          </div>
+          <div class="focus-stat">Sessions completed today: <b>${f.sessionsDone}</b></div>
+          <div class="focus-msg" id="focusMsg"></div>
+        </div>
+      </div>
+    `;
+    panel.querySelector("#startPauseBtn").addEventListener("click", toggleTimer);
+    panel.querySelector("#resetBtn").addEventListener("click", resetTimer);
+    panel.querySelector("#workInput").addEventListener("change",(e)=>{
+      f.workMin = Math.max(1, parseInt(e.target.value)||25);
+      if(!f.running && f.phase==="Focus") f.remaining = f.workMin*60;
+      renderContent();
+    });
+    panel.querySelector("#breakInput").addEventListener("change",(e)=>{
+      f.breakMin = Math.max(1, parseInt(e.target.value)||5);
+      if(!f.running && f.phase==="Break") f.remaining = f.breakMin*60;
+      renderContent();
+    });
+  }
+
+  if(state.activeTab === "flash"){
+    panel.innerHTML = `
+      <div class="content-head">
+        <div>
+          <h2>🃏 Flashcards — ${escapeHtml(folder.name)}</h2>
+          <div class="sub">Tap a card to flip it. Small, spaced reps beat one long cram.</div>
+        </div>
+      </div>
+      <div class="card-form">
+        <input type="text" id="frontInput" placeholder="Front — question or term">
+        <input type="text" id="backInput" placeholder="Back — answer or definition">
+        <button class="btn-main" id="addCardBtn">+ Add card</button>
+      </div>
+      <div id="cardsHolder"></div>
+    `;
+    renderFlashcards();
+    panel.querySelector("#addCardBtn").addEventListener("click", ()=>{
+      const fr = panel.querySelector("#frontInput");
+      const bk = panel.querySelector("#backInput");
+      if(!fr.value.trim() || !bk.value.trim()) return;
+      folder.flashcards.push({ id: Date.now(), front: fr.value.trim(), back: bk.value.trim() });
+      fr.value=""; bk.value="";
+      renderFlashcards();
+    });
+  }
+
+  if(state.activeTab === "pdf"){
+    panel.innerHTML = `
+      <div class="content-head">
+        <div>
+          <h2>📄 PDF Library — ${escapeHtml(folder.name)}</h2>
+          <div class="sub">Bring in a file from your device, or drop a link from the internet.</div>
+        </div>
+      </div>
+      <div class="pdf-add">
+        <label class="file-btn">📁 Upload from device
+          <input type="file" id="pdfFileInput" accept="application/pdf" style="display:none">
+        </label>
+        <input type="text" id="pdfUrlInput" placeholder="Paste a PDF link from the internet…">
+        <button class="btn-main" id="pdfUrlAdd">+ Add link</button>
+      </div>
+      <div class="pdf-list" id="pdfListHolder"></div>
+      <div class="pdf-frame-wrap" id="pdfFrameWrap">
+        <div class="empty"><div class="big">📚</div>Nothing open yet — add or select a PDF above.</div>
+      </div>
+      <div class="pdf-hint">Heads up: a few sites block outside embedding. If a preview stays blank, use "Open" to view it in a new tab.</div>
+    `;
+    renderPdfList();
+    panel.querySelector("#pdfFileInput").addEventListener("change",(e)=>{
+      const file = e.target.files[0];
+      if(!file) return;
+      const url = URL.createObjectURL(file);
+      folder.pdfs.push({ id:Date.now(), name:file.name, url, type:"device" });
+      renderPdfList();
+      showPdf(folder.pdfs[folder.pdfs.length-1]);
+    });
+    panel.querySelector("#pdfUrlAdd").addEventListener("click", ()=>{
+      const inp = panel.querySelector("#pdfUrlInput");
+      const url = inp.value.trim();
+      if(!url) return;
+      let name = url.split("/").pop() || url;
+      folder.pdfs.push({ id:Date.now(), name, url, type:"web" });
+      inp.value="";
+      renderPdfList();
+      showPdf(folder.pdfs[folder.pdfs.length-1]);
+    });
+  }
+}
+
+function renderFlashcards(){
+  const folder = currentFolder();
+  const holder = document.getElementById("cardsHolder");
+  if(!holder) return;
+  if(folder.flashcards.length===0){
+    holder.innerHTML = `<div class="empty"><div class="big">🃏</div>No cards yet in this folder. Add your first term above.</div>`;
+    return;
+  }
+  holder.innerHTML = `<div class="cards-grid">${folder.flashcards.map(c=>`
+    <div class="flashcard" data-id="${c.id}">
+      <button class="flash-del" data-del="${c.id}">✕</button>
+      <div class="inner">
+        <div class="face front">${escapeHtml(c.front)}</div>
+        <div class="face back">${escapeHtml(c.back)}</div>
+      </div>
+    </div>
+  `).join("")}</div>`;
+  holder.querySelectorAll(".flashcard").forEach(el=>{
+    el.addEventListener("click",(e)=>{
+      if(e.target.closest("[data-del]")) return;
+      el.classList.toggle("flipped");
+    });
+  });
+  holder.querySelectorAll("[data-del]").forEach(btn=>{
+    btn.addEventListener("click",(e)=>{
+      e.stopPropagation();
+      const id = Number(btn.dataset.del);
+      folder.flashcards = folder.flashcards.filter(c=>c.id!==id);
+      renderFlashcards();
+    });
+  });
+}
+
+function renderPdfList(){
+  const folder = currentFolder();
+  const holder = document.getElementById("pdfListHolder");
+  if(!holder) return;
+  if(folder.pdfs.length===0){
+    holder.innerHTML = "";
+    return;
+  }
+  holder.innerHTML = folder.pdfs.map(p=>`
+    <div class="pdf-row">
+      <span>${p.type==="device" ? "📁":"🔗"}</span>
+      <div class="pname">${escapeHtml(p.name)}</div>
+      <button data-view="${p.id}">Preview</button>
+      <a href="${p.url}" target="_blank" rel="noopener">Open</a>
+      <button data-rm="${p.id}" style="color:#A8493A">Remove</button>
+    </div>
+  `).join("");
+  holder.querySelectorAll("[data-view]").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      const p = folder.pdfs.find(x=>x.id==b.dataset.view);
+      showPdf(p);
+    });
+  });
+  holder.querySelectorAll("[data-rm]").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      folder.pdfs = folder.pdfs.filter(x=>x.id!=b.dataset.rm);
+      renderPdfList();
+      document.getElementById("pdfFrameWrap").innerHTML = `<div class="empty"><div class="big">📚</div>Nothing open yet — add or select a PDF above.</div>`;
+    });
+  });
+}
+
+function showPdf(p){
+  const wrap = document.getElementById("pdfFrameWrap");
+  if(!wrap || !p) return;
+  wrap.innerHTML = `<iframe src="${p.url}" title="${escapeHtml(p.name)}"></iframe>`;
+}
+
+/* =========================================================
+   FOCUS TIMER LOGIC
+========================================================= */
+function formatTime(sec){
+  const m = Math.floor(sec/60).toString().padStart(2,"0");
+  const s = Math.floor(sec%60).toString().padStart(2,"0");
+  return `${m}:${s}`;
+}
+function toggleTimer(){
+  const f = state.focus;
+  f.running = !f.running;
+  if(f.running){
+    f.timerId = setInterval(()=>{
+      f.remaining--;
+      if(f.remaining <= 0){
+        if(f.phase === "Focus"){
+          f.sessionsDone++;
+          f.phase = "Break";
+          f.remaining = f.breakMin*60;
+          setFocusMsg("Nicely done. Stretch, sip something, look away from the screen. 🌿");
+        } else {
+          f.phase = "Focus";
+          f.remaining = f.workMin*60;
+          setFocusMsg("Break's over — let's ease back in. 🔥");
+        }
+      }
+      updateTimerDom();
+    }, 1000);
+  } else {
+    clearInterval(f.timerId);
+  }
+  renderContent();
+}
+function resetTimer(){
+  const f = state.focus;
+  clearInterval(f.timerId);
+  f.running = false;
+  f.phase = "Focus";
+  f.remaining = f.workMin*60;
+  setFocusMsg("");
+  renderContent();
+}
+function updateTimerDom(){
+  const f = state.focus;
+  const timeEl = document.getElementById("timeDisplay");
+  const phaseEl = document.getElementById("phaseDisplay");
+  const ring = document.querySelector(".timer-ring");
+  if(!timeEl) return;
+  timeEl.textContent = formatTime(f.remaining);
+  phaseEl.textContent = f.phase;
+  const total = f.phase==="Focus" ? f.workMin*60 : f.breakMin*60;
+  const pct = Math.round(((total - f.remaining)/total)*100);
+  if(ring) ring.style.setProperty("--pct", pct);
+  const startBtn = document.getElementById("startPauseBtn");
+  if(startBtn) startBtn.textContent = f.running ? "Pause":"Start";
+}
+function setFocusMsg(msg){
+  const el = document.getElementById("focusMsg");
+  if(el) el.textContent = msg;
+}
+
+/* =========================================================
+   HELPERS
+========================================================= */
+function escapeHtml(str){
+  const d = document.createElement("div");
+  d.textContent = str;
+  return d.innerHTML;
+}
+function renderAll(){
+  renderFolders();
+  renderContent();
+}
+renderAll();
+</script>
+</body>
+</html>
